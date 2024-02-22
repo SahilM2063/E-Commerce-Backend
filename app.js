@@ -1,6 +1,9 @@
 const express = require('express');
 const { dbConnect } = require('./config/dbConnect');
 const { default: userRoutes } = require('./routes/userRoutes');
+const { default: productRoutes } = require('./routes/productRoute');
+const { default: categoryRoutes } = require('./routes/categoryRoute');
+const { default: brandRoutes } = require('./routes/brandRoute');
 require('dotenv').config();
 const { globalErrorHandler, notFound } = require('./middlewares/globalErrorHandler');
 
@@ -14,6 +17,9 @@ app.use(express.json());
 
 // routes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/brands', brandRoutes);
 
 // not found handler
 app.use(notFound);
