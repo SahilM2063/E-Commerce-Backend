@@ -74,7 +74,7 @@ const updateBrand = asyncHandler(async (req, res) => {
         }, { new: true });
         res.status(200).json({
             status: "success",
-            message: "Category updated successfully",
+            message: "Brand updated successfully",
             brand
         })
     }
@@ -95,7 +95,7 @@ const deleteBrand = asyncHandler(async (req, res) => {
             message: "Brand deleted successfully"
         })
     }
-})
+});
 
 
 module.exports = { createBrand, getAllBrands, getSingleBrand, updateBrand, deleteBrand }

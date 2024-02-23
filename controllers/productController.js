@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const Brand = require("../models/Brand");
 const asyncHandler = require('express-async-handler');
 
 // @desc = Create Product
@@ -7,7 +8,7 @@ const asyncHandler = require('express-async-handler');
 // @access = Private/Admin
 
 const createProduct = asyncHandler(async (req, res) => {
-    const { name, description, brand, category, sizes, colors, user, images, price, totalQty } = req.body;
+    const { name, description, brand, category, sizes, colors, images, price, totalQty } = req.body;
 
     // check if product exists
     const productExist = await Product.findOne({ name });
@@ -20,6 +21,12 @@ const createProduct = asyncHandler(async (req, res) => {
     const categoryExist = await Category.findOne({ name: category });
     if (!categoryExist) {
         throw new Error('Category not found, Please create a category first or check the category name');
+    }
+
+    // find the brand
+    const brandExist = await Brand.findOne({ name: brand });
+    if (!brandExist) {
+        throw new Error('Brand not found, Please create a brand first or check the brand name');
     }
 
     // create the product
@@ -39,6 +46,10 @@ const createProduct = asyncHandler(async (req, res) => {
     // push the product id to the category's product array
     categoryExist.products.push(product._id);
     await categoryExist.save();
+
+    // push the product id to the brand's product array
+    brandExist.products.push(product._id);
+    await brandExist.save();
 
     // success response
     res.status(201).json({
