@@ -121,7 +121,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     }
 
     // setting data 
-    const products = await productQuery;
+    const products = await productQuery.populate('reviews');
 
     res.status(200).json({
         status: 'success',
@@ -139,7 +139,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
 const getSingleProduct = asyncHandler(async (req, res) => {
     // fetch product from id
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate('reviews');
 
     // check if product exists
     if (!product) {
