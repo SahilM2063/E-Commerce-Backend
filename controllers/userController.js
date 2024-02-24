@@ -77,14 +77,11 @@ const loginUser = asyncHandler(
 
 const userProfile = asyncHandler(
     async (req, res) => {
-        // get token from header
-        const token = getTokenFromHeader(req)
-
-        // verify token
-        const verified = verifyToken(token);
-        console.log(req)
+        const user = await User.findById(req.userAuthId).populate('orders');
         res.status(200).json({
-            "message": "User Profile",
+            status: "success",
+            message: "User profile fetched",
+            user
         })
     }
 )

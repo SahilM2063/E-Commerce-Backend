@@ -48,23 +48,26 @@ const createOrder = asyncHandler(async (req, res) => {
         await product.save()
     });
 
-    // push order to user
-    userFound.orders.push(order?._id);
-    await userFound.save()
-
-    // Make stripe payment
-    const session = await stripe.checkout.sessions.create({
-        line_items: [{
+    // convert the orderItems to have same structure as stripe needed
+    const convertedOrders = orderItems?.map((item) => {
+        return {
             price_data: {
                 currency: 'inr',
                 product_data: {
-                    name: "Hats",
-                    description: "A Best Hat"
+                    name: item?.name,
+                    description: item?.description
                 },
-                unit_amount: 10 * 100,
+                unit_amount: item?.price * 100,
             },
-            quantity: 3,
-        }],
+            quantity: item?.qty,
+        }
+    })
+    // Make stripe payment
+    const session = await stripe.checkout.sessions.create({
+        line_items: convertedOrders,
+        metadata: {
+            orderId: JSON.stringify(order?._id),
+        },
         payment_method_types: ['card',],
         mode: 'payment',
         success_url: `http://localhost:3000/success`,
@@ -72,17 +75,51 @@ const createOrder = asyncHandler(async (req, res) => {
     })
 
     res.send({ url: session.url })
-
-    // res.status(201).json({
-    //     status: "success",
-    //     message: "Order Created",
-    //     order,
-    //     userFound
-    // })
-
 })
 
-module.exports = { createOrder }
+// @desc : Get ALl Orders
+// @route : GET /api/v1/orders/getAll
+// @access : Private/Admin
+
+const getAllOrders = asyncHandler(async (req, res) => {
+    const orders = await Order.find()
+    res.status(200).json({
+        status: "success",
+        message: "All Orders Fetched",
+        orders
+    })
+})
+
+// @desc : Get Single Order
+// @route : GET /api/v1/orders/:id
+// @access : Private/Admin
+
+const getSingleOrder = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    res.status(200).json({
+        status: "success",
+        message: "Single Order Fetched",
+        order
+    })
+})
+
+// @desc : Update Order
+// @route : PUT /api/v1/orders/update/:id
+// @access : Private/Admin
+
+const updateOrder = asyncHandler(async (req, res) => {
+    const order = await Order.findByIdAndUpdate(req.params.id, {
+        status: req.body.status,
+    }, { new: true });
+
+    res.status(200).json({
+        status: "success",
+        message: "Order updated successfully",
+        order
+    })
+})
+
+module.exports = { createOrder, getAllOrders, getSingleOrder, updateOrder }
 
 
 
