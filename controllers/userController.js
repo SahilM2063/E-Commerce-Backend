@@ -110,4 +110,4 @@ const updateShippingAddress = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = { registerUser, loginUser, userProfile , updateShippingAddress}
+module.exports = { registerUser, loginUser, userProfile, updateShippingAddress }
