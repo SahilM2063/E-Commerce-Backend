@@ -7,6 +7,7 @@ const { default: brandRoutes } = require('./routes/brandRoutes');
 const { default: colorRoutes } = require('./routes/colorRoutes');
 const { default: reviewRoutes } = require('./routes/reviewRoutes');
 const { default: orderRoutes } = require('./routes/orderRoutes');
+const { default: couponRoutes } = require('./routes/coupenRoutes');
 const Order = require('./models/Order');
 require('dotenv').config();
 const { globalErrorHandler, notFound } = require('./middlewares/globalErrorHandler');
@@ -83,6 +84,7 @@ app.use('/api/v1/brands', brandRoutes);
 app.use('/api/v1/colors', colorRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/coupons', couponRoutes);
 
 
 // not found handler

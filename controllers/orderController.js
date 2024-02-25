@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const Coupon = require('../models/Coupon');
 const asyncHandler = require('express-async-handler');
 const Stripe = require('stripe');
 const dotenv = require('dotenv').config();
@@ -9,6 +10,22 @@ const dotenv = require('dotenv').config();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createOrder = asyncHandler(async (req, res) => {
+    // get the coupon
+    const { coupon } = req?.query;
+
+    const couponFound = await Coupon.findOne({ code: coupon?.toUpperCase() });
+    console.log(couponFound)
+    // check if coupon exists or not
+    if (!couponFound) {
+        throw new Error('Coupon not found');
+    }
+    // check if coupon is expired or not 
+    if (couponFound?.isExpired) {
+        throw new Error('Coupon expired');
+    }
+    // get the discount
+    const discount = couponFound?.discount / 100;
+
     const { orderItems, shippingAddress, totalPrice } = req.body;
 
     // find the user
@@ -29,8 +46,9 @@ const createOrder = asyncHandler(async (req, res) => {
         user: userFound?._id,
         orderItems,
         shippingAddress,
-        totalPrice,
+        totalPrice: couponFound ? totalPrice - totalPrice * discount : totalPrice,
     })
+    console.log(order)
 
     // save the order in User model
     userFound.orders.push(order?._id);
