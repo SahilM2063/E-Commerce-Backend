@@ -163,12 +163,33 @@ const getOrderStats = asyncHandler(async (req, res) => {
         }
     ]);
 
+    // get the date 
+    const date = new Date();
+    const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const todaySales = await Order.aggregate([
+        {
+            $match: {
+                createdAt: {
+                    $gte: today
+                }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                sumOfSales: {
+                    $sum: '$totalPrice'
+                }
+            }
+        }
+    ])
+
 
 
     res.status(200).json({
         status: "success",
         message: "Order Stats Successfully",
-        orderStats
+        orderStats, todaySales
     })
 })
 
