@@ -137,7 +137,42 @@ const updateOrder = asyncHandler(async (req, res) => {
     })
 })
 
-module.exports = { createOrder, getAllOrders, getSingleOrder, updateOrder }
+// @desc : Get Total Sales 
+// @route : GET /api/v1/orders/sales/sum
+// @access : Private/Admin
+
+const getOrderStats = asyncHandler(async (req, res) => {
+    // Order stats
+    const orderStats = await Order.aggregate([
+        {
+            $group: {
+                _id: null,
+                sumOfSales: {
+                    $sum: '$totalPrice'
+                },
+                minOrder: {
+                    $min: '$totalPrice'
+                },
+                maxOrder: {
+                    $max: '$totalPrice'
+                },
+                averageOrder: {
+                    $avg: '$totalPrice'
+                }
+            }
+        }
+    ]);
+
+
+
+    res.status(200).json({
+        status: "success",
+        message: "Total Sales Fetched Successfully",
+        orderStats
+    })
+})
+
+module.exports = { createOrder, getAllOrders, getSingleOrder, updateOrder, getOrderStats }
 
 
 
