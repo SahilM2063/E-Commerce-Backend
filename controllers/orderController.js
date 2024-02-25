@@ -167,7 +167,7 @@ const getOrderStats = asyncHandler(async (req, res) => {
 
     res.status(200).json({
         status: "success",
-        message: "Total Sales Fetched Successfully",
+        message: "Order Stats Successfully",
         orderStats
     })
 })
