@@ -19,7 +19,8 @@ const createCategory = asyncHandler(async (req, res) => {
         // create category
         const category = await Category.create({
             name: name.toLowerCase(),
-            user: req.userAuthId
+            user: req.userAuthId,
+            image: req.file.path
         });
 
         res.status(201).json({

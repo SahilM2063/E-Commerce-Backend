@@ -8,7 +8,10 @@ const asyncHandler = require('express-async-handler');
 // @access = Private/Admin
 
 const createProduct = asyncHandler(async (req, res) => {
-    const { name, description, brand, category, sizes, colors, images, price, totalQty } = req.body;
+    const { name, description, brand, category, sizes, colors, price, totalQty } = req.body;
+
+    // storing images
+    const images = req?.files?.map(file => file.path);
 
     // check if product exists
     const productExist = await Product.findOne({ name });
