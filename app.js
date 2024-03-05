@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const { dbConnect } = require('./config/dbConnect');
 const { default: userRoutes } = require('./routes/userRoutes');
 const { default: productRoutes } = require('./routes/productRoutes');
@@ -17,6 +18,9 @@ const { globalErrorHandler, notFound } = require('./middlewares/globalErrorHandl
 dbConnect();
 
 const app = express();
+
+// cors for cross origin resource sharing
+app.use(cors());
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
