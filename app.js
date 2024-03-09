@@ -10,7 +10,7 @@ const { default: reviewRoutes } = require('./routes/reviewRoutes');
 const { default: orderRoutes } = require('./routes/orderRoutes');
 const { default: couponRoutes } = require('./routes/coupenRoutes');
 const Order = require('./models/Order');
-const passport = require("passport")
+const passport = require('passport');
 require('dotenv').config();
 
 const { globalErrorHandler, notFound } = require('./middlewares/globalErrorHandler');
