@@ -12,4 +12,4 @@ categoryRoutes.get('/:id', getSingleCategory);
 categoryRoutes.put('/:id', isLoggedIn, isAdmin, updateCategory);
 categoryRoutes.delete('/:id', isLoggedIn, isAdmin, deleteCategory);
 
-exports.default = categoryRoutes;
+module.exports = categoryRoutes;

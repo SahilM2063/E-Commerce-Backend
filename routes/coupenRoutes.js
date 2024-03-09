@@ -12,4 +12,4 @@ couponRoutes.put('/:id', isLoggedIn, isAdmin, updateCoupon);
 couponRoutes.delete('/:id', isLoggedIn, isAdmin, deleteCoupon);
 
 
-exports.default = couponRoutes
+module.exports = couponRoutes

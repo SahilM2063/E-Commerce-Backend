@@ -11,4 +11,4 @@ colorRoutes.get('/:id', getSingleColor);
 colorRoutes.put('/:id', isLoggedIn, isAdmin, updateColor);
 colorRoutes.delete('/:id', isLoggedIn, isAdmin, deleteColor);
 
-exports.default = colorRoutes;
+module.exports = colorRoutes;

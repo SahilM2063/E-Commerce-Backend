@@ -12,4 +12,4 @@ orderRouter.put('/update/:id', isLoggedIn, isAdmin, updateOrder);
 orderRouter.get('/sales/stats', isLoggedIn, isAdmin, getOrderStats);
 
 
-exports.default = orderRouter;
+module.exports = orderRouter;

@@ -11,4 +11,4 @@ brandRoutes.get('/:id', getSingleBrand);
 brandRoutes.put('/:id', isLoggedIn, isAdmin, updateBrand);
 brandRoutes.delete('/:id', isLoggedIn, isAdmin, deleteBrand);
 
-exports.default = brandRoutes;
+module.exports = brandRoutes;

@@ -12,4 +12,4 @@ productRoutes.get('/:id', getSingleProduct)
 productRoutes.put('/:id', isLoggedIn, isAdmin, updateProduct)
 productRoutes.delete('/:id', isLoggedIn, isAdmin, deleteProduct)
 
-exports.default = productRoutes;
+module.exports = productRoutes;

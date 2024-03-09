@@ -7,4 +7,4 @@ const reviewRoutes = express.Router();
 
 reviewRoutes.post('/:product_id', isLoggedIn, createReview);
 
-exports.default = reviewRoutes;
+module.exports = reviewRoutes;
