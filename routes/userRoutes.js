@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, userProfile, updateShippingAddress } = require('../controllers/userController');
+const { registerUser, loginUser, userProfile, updateShippingAddress, loginWithGoogle } = require('../controllers/userController');
 const { isLoggedIn } = require('../middlewares/isLoggedIn');
 
 

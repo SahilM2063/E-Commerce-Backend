@@ -11,7 +11,7 @@ const { verifyToken } = require('../utils/verifyToken');
 
 const registerUser = asyncHandler(
     async (req, res) => {
-        const { username, email, password } = req.body;
+        const { firstName, lastName, email, password } = req.body;
 
         const userFound = await User.findOne({ email });
         // if email already exists it returns 
@@ -25,7 +25,8 @@ const registerUser = asyncHandler(
 
         //create the user
         const user = await User.create({
-            username,
+            firstName,
+            lastName,
             email,
             password: hashedPassword
         });
