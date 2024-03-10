@@ -6,7 +6,7 @@ const isLoggedIn = (req, res, next) => {
     const token = getTokenFromHeader(req)
 
     // verify token
-    const decodedUser = verifyToken(token)
+    const decodedUser = verifyToken(token, process.env.JWT_SECRET)
     if (!decodedUser) {
         throw new Error("Invalid / Expired Token, Please log in again")
     } else {

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const dotenv = require('dotenv').config();
 const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler');
 const { generateJWT } = require('../utils/generateToken');
@@ -35,7 +36,7 @@ const registerUser = asyncHandler(
                 status: "success",
                 msg: 'User Registered Successfully',
                 data: user,
-                token: generateJWT(savedUser?._id)
+                token: generateJWT(savedUser?._id, process.env.JWT_SECRET, "1d")
             })
         } catch (error) {
             throw new Error(error);
@@ -65,7 +66,7 @@ const loginUser = asyncHandler(
                     status: "success",
                     msg: 'User Logged in Successfully',
                     userFound,
-                    token: generateJWT(userFound?._id)
+                    token: generateJWT(userFound?._id, process.env.JWT_SECRET, "1d")
                 })
             } else {
                 throw new Error('Invalid Credentials');
@@ -98,6 +99,74 @@ const updateUserPassword = asyncHandler(
                 })
             } else {
                 throw new Error('Invalid Credentials');
+            }
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+)
+
+// @desc = Reset Password
+// @route = POST /api/v1/users/reset-password
+// @access = Private
+
+const resetPasswordLink = asyncHandler(
+    async (req, res) => {
+        try {
+            const { email } = req.body;
+            if (!email) {
+                throw new Error('Email is required');
+            }
+            const user = await User.findOne({ email });
+            if (!user) {
+                throw new Error('User not found');
+            }
+            const emailLinkSecret = user?._id + process.env.JWT_SECRET;
+            const emailLinkToken = generateJWT(user?._id, emailLinkSecret, "15m");
+            const resetLink = `http://localhost:6969/api/v1/users/reset-password/${user?._id}/${emailLinkToken}`;
+            console.log(resetLink)
+            res.status(200).json({
+                status: "success",
+                msg: "Reset password link sent to your email, Only vaild for 15 minutes.",
+            })
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+)
+
+// @desc = Reset Password
+// @route = PUT /api/v1/users/reset-password/:id/:token
+// @access = Private
+
+const resetPassword = asyncHandler(
+    async (req, res) => {
+        try {
+            const { password, confirmPassword } = req.body;
+            const { id, token } = req.params;
+            const user = await User.findById(id);
+            if (!user) {
+                throw new Error('Invalid link');
+            }
+            const emailLinkSecret = user?._id + process.env.JWT_SECRET;
+            const isVerified = verifyToken(token, emailLinkSecret);
+            if (!isVerified) {
+                throw new Error('Invalid link');
+            }
+            if (password && confirmPassword) {
+                if (password !== confirmPassword) {
+                    throw new Error('Passwords do not match');
+                }
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(password, salt)
+                user.password = hashedPassword;
+                await user.save();
+                res.status(200).json({
+                    status: "success",
+                    msg: "Password reset successfully",
+                })
+            } else {
+                throw new Error('All fields are required');
             }
         } catch (error) {
             throw new Error(error);
@@ -141,4 +210,4 @@ const updateShippingAddress = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = { registerUser, loginUser, updateUserPassword, userProfile, updateShippingAddress }
+module.exports = { registerUser, loginUser, updateUserPassword, userProfile, updateShippingAddress, resetPasswordLink, resetPassword }
