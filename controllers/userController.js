@@ -5,6 +5,7 @@ const asyncHandler = require('express-async-handler');
 const { generateJWT } = require('../utils/generateToken');
 const { getTokenFromHeader } = require('../utils/getTokenFromHeader');
 const { verifyToken } = require('../utils/verifyToken');
+const transporter = require('../config/emailConfig');
 
 // @desc = Register User
 // @route = POST /api/v1/users/register
@@ -124,10 +125,16 @@ const resetPasswordLink = asyncHandler(
             const emailLinkSecret = user?._id + process.env.JWT_SECRET;
             const emailLinkToken = generateJWT(user?._id, emailLinkSecret, "15m");
             const resetLink = `http://localhost:6969/api/v1/users/reset-password/${user?._id}/${emailLinkToken}`;
-            console.log(resetLink)
+            let info = await transporter.sendMail({
+                from: process.env.EMAIL_FROM,
+                to: user.email,
+                subject: "Fasco-Ecommerce - Reset Password",
+                html: `<a href=${resetLink} target="_blank" >Reset password</a>`
+            })
             res.status(200).json({
                 status: "success",
                 msg: "Reset password link sent to your email, Only vaild for 15 minutes.",
+                info
             })
         } catch (error) {
             throw new Error(error);
