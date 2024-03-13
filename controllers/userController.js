@@ -1,11 +1,13 @@
 const User = require('../models/User');
 const dotenv = require('dotenv').config();
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 const asyncHandler = require('express-async-handler');
 const { generateJWT } = require('../utils/generateToken');
 const { getTokenFromHeader } = require('../utils/getTokenFromHeader');
 const { verifyToken } = require('../utils/verifyToken');
 const transporter = require('../config/emailConfig');
+const baseFrontendUrl = require('../utils/baseUrl');
 
 // @desc = Register User
 // @route = POST /api/v1/users/register
@@ -36,7 +38,7 @@ const registerUser = asyncHandler(
             res.status(201).json({
                 status: "success",
                 msg: 'User Registered Successfully',
-                data: user,
+                userFound: user,
                 token: generateJWT(savedUser?._id, process.env.JWT_SECRET, "1d")
             })
         } catch (error) {
@@ -107,8 +109,8 @@ const updateUserPassword = asyncHandler(
     }
 )
 
-// @desc = Reset Password
-// @route = POST /api/v1/users/reset-password
+// @desc = Reset Password Link
+// @route = POST /api/v1/users/resetPassEmail
 // @access = Private
 
 const resetPasswordLink = asyncHandler(
@@ -124,7 +126,7 @@ const resetPasswordLink = asyncHandler(
             }
             const emailLinkSecret = user?._id + process.env.JWT_SECRET;
             const emailLinkToken = generateJWT(user?._id, emailLinkSecret, "15m");
-            const resetLink = `http://localhost:6969/api/v1/users/reset-password/${user?._id}/${emailLinkToken}`;
+            const resetLink = `${baseFrontendUrl}/users/reset-password/${user?._id}/${emailLinkToken}`;
             let info = await transporter.sendMail({
                 from: process.env.EMAIL_FROM,
                 to: user.email,
@@ -143,7 +145,7 @@ const resetPasswordLink = asyncHandler(
 )
 
 // @desc = Reset Password
-// @route = PUT /api/v1/users/reset-password/:id/:token
+// @route = POST /api/v1/users/reset-password/:id/:token
 // @access = Private
 
 const resetPassword = asyncHandler(
