@@ -9,7 +9,7 @@ const productRoutes = express.Router();
 productRoutes.post('/create-product', isLoggedIn, isAdmin, upload.array('images'), createProduct)
 productRoutes.get('/getAll', getAllProducts)
 productRoutes.get('/:id', getSingleProduct)
-productRoutes.put('/:id', isLoggedIn, isAdmin, updateProduct)
+productRoutes.put('/:id', isLoggedIn, isAdmin, upload.array('images'), updateProduct)
 productRoutes.delete('/:id', isLoggedIn, isAdmin, deleteProduct)
 
 module.exports = productRoutes;

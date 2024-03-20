@@ -161,7 +161,15 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 // @access = Private/Admin
 
 const updateProduct = asyncHandler(async (req, res) => {
-    const { name, description, brand, category, sizes, colors, user, images, price, totalQty } = req.body;
+    const { name, description, brand, category, sizes, colors, price, totalQty } = req.body;
+
+    // storing images
+    const images = req?.files?.map(file => file.path);
+
+    // Check if _id is present in req.body
+    if (!req.params.id) {
+        throw new Error('Product ID is required');
+    }
 
     // check if product exists
     const productExist = await Product.findById(req.params.id);

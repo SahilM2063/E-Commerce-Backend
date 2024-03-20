@@ -126,7 +126,7 @@ const resetPasswordLink = asyncHandler(
             }
             const emailLinkSecret = user?._id + process.env.JWT_SECRET;
             const emailLinkToken = generateJWT(user?._id, emailLinkSecret, "15m");
-            const resetLink = `${baseFrontendUrl}/users/reset-password/${user?._id}/${emailLinkToken}`;
+            const resetLink = `http://localhost:5173/user/reset-password/${user?._id}/${emailLinkToken}`;
             let info = await transporter.sendMail({
                 from: process.env.EMAIL_FROM,
                 to: user.email,
