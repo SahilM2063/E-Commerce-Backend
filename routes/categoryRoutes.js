@@ -9,7 +9,7 @@ const categoryRoutes = express.Router();
 categoryRoutes.post('/create-category', isLoggedIn, isAdmin, uploadCategoryFile.single('image'), createCategory);
 categoryRoutes.get('/getAll', getAllCategories);
 categoryRoutes.get('/:id', getSingleCategory);
-categoryRoutes.put('/:id', isLoggedIn, isAdmin, updateCategory);
+categoryRoutes.put('/:id', isLoggedIn, isAdmin, uploadCategoryFile.single('image'), updateCategory);
 categoryRoutes.delete('/:id', isLoggedIn, isAdmin, deleteCategory);
 
 module.exports = categoryRoutes;
