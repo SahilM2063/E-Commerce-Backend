@@ -72,7 +72,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     } else {
         const { name } = req.body;
         const category = await Category.findByIdAndUpdate(req.params.id, {
-            name
+            name, image: req.file.path || category.image,
         }, { new: true });
         res.status(200).json({
             status: "success",

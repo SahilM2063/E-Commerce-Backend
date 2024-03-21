@@ -162,9 +162,7 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
     const { name, description, brand, category, sizes, colors, price, totalQty } = req.body;
-
-    // storing images
-    const images = req?.files?.map(file => file.path);
+    let images = req?.files?.map((file) => file.path)
 
     // Check if _id is present in req.body
     if (!req.params.id) {
@@ -173,6 +171,9 @@ const updateProduct = asyncHandler(async (req, res) => {
 
     // check if product exists
     const productExist = await Product.findById(req.params.id);
+
+    // storing images
+
     if (!productExist) {
         throw new Error('Product not found');
     } else {
