@@ -233,5 +233,23 @@ const updateShippingAddress = asyncHandler(async (req, res) => {
     })
 })
 
+// @desc = Delete User
+// @route = DELETE /api/v1/users/:id
+// @access = Private
 
-module.exports = { registerUser, loginUser, getAllUsers, updateUserPassword, userProfile, updateShippingAddress, resetPasswordLink, resetPassword }
+const deleteUser = asyncHandler(
+    async (req, res) => {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            throw new Error('User not found');
+        } else {
+            await User.findByIdAndDelete(req.params.id);
+            res.status(200).json({
+                status: "success",
+                message: "User deleted successfully",
+            })
+        }
+    })
+
+
+module.exports = { registerUser, loginUser, getAllUsers, updateUserPassword, userProfile, updateShippingAddress, resetPasswordLink, resetPassword, deleteUser }
