@@ -183,6 +183,21 @@ const resetPassword = asyncHandler(
     }
 )
 
+// @desc = Get All Users
+// @route = GET /api/v1/users
+// @access = Private
+
+const getAllUsers = asyncHandler(
+    async (req, res) => {
+        const users = await User.find();
+        res.status(200).json({
+            status: "success",
+            message: "All users fetched",
+            users
+        })
+    }
+)
+
 // @desc = User Profile
 // @route = POST /api/v1/users/profile
 // @access = Private
@@ -219,4 +234,4 @@ const updateShippingAddress = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = { registerUser, loginUser, updateUserPassword, userProfile, updateShippingAddress, resetPasswordLink, resetPassword }
+module.exports = { registerUser, loginUser, getAllUsers, updateUserPassword, userProfile, updateShippingAddress, resetPasswordLink, resetPassword }

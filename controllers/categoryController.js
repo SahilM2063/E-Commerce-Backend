@@ -67,12 +67,13 @@ const getSingleCategory = asyncHandler(async (req, res) => {
 
 const updateCategory = asyncHandler(async (req, res) => {
     const category = await Category.findById(req.params.id);
+    const image = req?.file ? req.file.path : category.image
     if (!category) {
         throw new Error('Category not found');
     } else {
         const { name } = req.body;
         const category = await Category.findByIdAndUpdate(req.params.id, {
-            name, image: req.file.path || category.image,
+            name, image: image,
         }, { new: true });
         res.status(200).json({
             status: "success",
