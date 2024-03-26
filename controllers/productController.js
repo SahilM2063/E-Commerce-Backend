@@ -162,7 +162,6 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
     const { name, description, brand, category, sizes, colors, price, totalQty } = req.body;
-    let images = req?.files?.map((file) => file.path)
 
     // Check if _id is present in req.body
     if (!req.params.id) {
@@ -172,11 +171,18 @@ const updateProduct = asyncHandler(async (req, res) => {
     // check if product exists
     const productExist = await Product.findById(req.params.id);
 
-    // storing images
-
+    let images;
     if (!productExist) {
         throw new Error('Product not found');
     } else {
+        // Check if new images are selected for update
+        if (req.files && req.files.length > 0) {
+            images = req.files.map((file) => file.path);
+        } else {
+            // No new images selected, retain existing images
+            images = productExist.images.map((file) => file);
+        }
+
         const product = await Product.findByIdAndUpdate(req.params.id, {
             name,
             description,
@@ -185,19 +191,21 @@ const updateProduct = asyncHandler(async (req, res) => {
             sizes,
             colors,
             user: req.userAuthId,
-            images,
+            images: images,
             price,
             totalQty
         }, {
             new: true
         });
+
         res.status(200).json({
             status: 'success',
             message: 'Product updated successfully',
             product
-        })
+        });
     }
-})
+});
+
 
 // @desc = Delete Product
 // @route = DELETE /api/v1/products/:id
