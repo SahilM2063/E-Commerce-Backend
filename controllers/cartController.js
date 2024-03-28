@@ -8,7 +8,13 @@ const asyncHandler = require('express-async-handler');
 
 const getUserCart = asyncHandler(async (req, res) => {
     try {
-        const user = await User.findById(req.userAuthId).populate('cart');
+        const user = await User.findById(req.userAuthId).populate({
+            path: 'cart',
+            populate: {
+                path: 'productId',
+                model: 'Product'
+            }
+        });
 
         if (!user) {
             throw new Error('User not found');
