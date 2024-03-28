@@ -57,7 +57,7 @@ const addToCart = asyncHandler(async (req, res) => {
             throw new Error('Product not found');
         }
 
-        const productExist = await user.cart.find((item) => {
+        const productExist = user.cart.find((item) => {
             return item.productId.toString() === productId.toString();
         })
 
