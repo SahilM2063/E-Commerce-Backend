@@ -85,6 +85,45 @@ const addToCart = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc = Remove Product from user Cart
+// @route = POST /api/v1/cart/removeFromCart
+// @access = Private
+
+const removeFromCart = asyncHandler(async (req, res) => {
+    try {
+        const { productId } = req.body;
+        if (!productId) {
+            throw new Error('Product Id is required');
+        }
+
+        const user = await User.findById(req.userAuthId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const productExist = await user.cart.find((item) => {
+            return item._id.toString() === productId.toString();
+        })
+
+        if (!productExist) {
+            throw new Error('Product not found in cart');
+        }
+
+        await User.updateOne(
+            { _id: req.userAuthId },
+            { $pull: { cart: { _id: productId } } }
+        );
+
+        res.status(200).json({
+            status: "success",
+            message: "Product removed from cart",
+        })
+
+    } catch (error) {
+        throw new Error(error);
+    }
+})
+
 module.exports = {
-    getUserCart, addToCart
+    getUserCart, addToCart, removeFromCart
 }
