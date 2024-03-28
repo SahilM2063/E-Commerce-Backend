@@ -22,6 +22,28 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    cart: [
+        {
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product'
+            },
+            quantity: {
+                type: Number,
+                default: 1
+            },
+            size: {
+                type: String
+            },
+            color: {
+                type: String
+            },
+            price: {
+                type: Number,
+                required: true
+            }
+        }
+    ],
     orders: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -68,6 +90,10 @@ const userSchema = new mongoose.Schema({
             type: String,
         }
     }
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true } });
+
+userSchema.virtual('totalCartValue').get(function () {
+    return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+})
 
 module.exports = mongoose.model('User', userSchema);
