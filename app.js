@@ -10,6 +10,7 @@ const colorRoutes = require('./routes/colorRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const couponRoutes = require('./routes/coupenRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const Order = require('./models/Order');
 const { globalErrorHandler, notFound } = require('./middlewares/globalErrorHandler');
 
@@ -77,6 +78,7 @@ app.use('/api/v1/colors', colorRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/coupons', couponRoutes);
+app.use('/api/v1/cart', cartRoutes);
 // not found handler
 app.use(notFound);
 // global error handler

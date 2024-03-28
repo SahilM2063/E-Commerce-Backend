@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const dotenv = require('dotenv').config();
 const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
 const asyncHandler = require('express-async-handler');
 const { generateJWT } = require('../utils/generateToken');
 const { getTokenFromHeader } = require('../utils/getTokenFromHeader');
