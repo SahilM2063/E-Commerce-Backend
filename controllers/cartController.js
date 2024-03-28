@@ -85,15 +85,27 @@ const addToCart = asyncHandler(async (req, res) => {
     }
 })
 
-// @desc = Remove Product from user Cart
-// @route = POST /api/v1/cart/removeFromCart
+// @desc = Update Product In Cart
+// @route = POST /api/v1/cart/updateCart
 // @access = Private
 
-const removeFromCart = asyncHandler(async (req, res) => {
+const updateCart = asyncHandler(async (req, res) => {
     try {
-        const { productId } = req.body;
-        if (!productId) {
-            throw new Error('Product Id is required');
+        const { itemId, quantity, size, color, price } = req.body;
+        if (!itemId) {
+            throw new Error('Item Id is required');
+        }
+        if (!quantity) {
+            throw new Error('Quantity is required');
+        }
+        if (!size) {
+            throw new Error('Size is required');
+        }
+        if (!color) {
+            throw new Error('Color is required');
+        }
+        if (!price) {
+            throw new Error('Price is required');
         }
 
         const user = await User.findById(req.userAuthId);
@@ -101,17 +113,58 @@ const removeFromCart = asyncHandler(async (req, res) => {
             throw new Error('User not found');
         }
 
-        const productExist = await user.cart.find((item) => {
-            return item._id.toString() === productId.toString();
+        const itemExist = user.cart.find((item) => {
+            return item._id.toString() === itemId.toString();
         })
 
-        if (!productExist) {
-            throw new Error('Product not found in cart');
+        if (!itemExist) {
+            throw new Error('Item not found in cart');
+        }
+
+        await User.updateOne(
+            { _id: req.userAuthId, 'cart._id': itemId },
+            { $set: { 'cart.$.quantity': quantity, 'cart.$.size': size, 'cart.$.color': color, 'cart.$.price': price } }
+        )
+
+        res.status(200).json({
+            status: "success",
+            message: "Product updated in cart",
+        })
+
+    } catch (error) {
+        throw new Error(error);
+    }
+})
+
+
+
+// @desc = Remove Product from user Cart
+// @route = POST /api/v1/cart/removeFromCart
+// @access = Private
+
+const removeFromCart = asyncHandler(async (req, res) => {
+    try {
+        const { itemId } = req.body; // Changed from productId to itemId
+        if (!itemId) {
+            throw new Error('Item Id is required');
+        }
+
+        const user = await User.findById(req.userAuthId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const itemExist = user.cart.find((item) => {
+            return item._id.toString() === itemId.toString(); // Using item._id to find the item
+        })
+
+        if (!itemExist) {
+            throw new Error('Item not found in cart');
         }
 
         await User.updateOne(
             { _id: req.userAuthId },
-            { $pull: { cart: { _id: productId } } }
+            { $pull: { cart: { _id: itemId } } } // Using itemId to remove the item
         );
 
         res.status(200).json({
@@ -125,5 +178,5 @@ const removeFromCart = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-    getUserCart, addToCart, removeFromCart
+    getUserCart, addToCart, removeFromCart, updateCart
 }
