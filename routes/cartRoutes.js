@@ -6,7 +6,7 @@ const cartRoutes = express.Router();
 
 cartRoutes.get('/get-Cart', isLoggedIn, getUserCart);
 cartRoutes.post('/addToCart', isLoggedIn, addToCart);
-cartRoutes.put('/updateCart', isLoggedIn, updateCart);
+cartRoutes.put('/updateCart/:id', isLoggedIn, updateCart);
 cartRoutes.delete('/removeFromCart/:id', isLoggedIn, removeFromCart);
 
 module.exports = cartRoutes

@@ -98,21 +98,14 @@ const addToCart = asyncHandler(async (req, res) => {
 
 const updateCart = asyncHandler(async (req, res) => {
     try {
-        const { itemId, quantity, size, color, price } = req.body;
+        const { quantity } = req.body;
+        const itemId = req?.params?.id;
+
         if (!itemId) {
             throw new Error('Item Id is required');
         }
         if (!quantity) {
             throw new Error('Quantity is required');
-        }
-        if (!size) {
-            throw new Error('Size is required');
-        }
-        if (!color) {
-            throw new Error('Color is required');
-        }
-        if (!price) {
-            throw new Error('Price is required');
         }
 
         const user = await User.findById(req.userAuthId);
@@ -120,18 +113,13 @@ const updateCart = asyncHandler(async (req, res) => {
             throw new Error('User not found');
         }
 
-        const itemExist = user.cart.find((item) => {
-            return item._id.toString() === itemId.toString();
-        })
-
-        if (!itemExist) {
+        const itemIndex = user.cart.findIndex(item => item._id.toString() === itemId.toString());
+        if (itemIndex === -1) {
             throw new Error('Item not found in cart');
         }
 
-        await User.updateOne(
-            { _id: req.userAuthId, 'cart._id': itemId },
-            { $set: { 'cart.$.quantity': quantity, 'cart.$.size': size, 'cart.$.color': color, 'cart.$.price': price } }
-        )
+        user.cart[itemIndex].quantity = quantity;
+        await user.save();
 
         res.status(200).json({
             status: "success",
@@ -140,6 +128,7 @@ const updateCart = asyncHandler(async (req, res) => {
         })
 
     } catch (error) {
+        console.error('Error in updateCart:', error);
         throw new Error(error);
     }
 })
