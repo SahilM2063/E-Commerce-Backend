@@ -84,6 +84,7 @@ const addToCart = asyncHandler(async (req, res) => {
         res.status(200).json({
             status: "success",
             message: "Product added to cart",
+            user
         })
 
     } catch (error) {
@@ -135,6 +136,7 @@ const updateCart = asyncHandler(async (req, res) => {
         res.status(200).json({
             status: "success",
             message: "Product updated in cart",
+            user
         })
 
     } catch (error) {
@@ -150,7 +152,7 @@ const updateCart = asyncHandler(async (req, res) => {
 
 const removeFromCart = asyncHandler(async (req, res) => {
     try {
-        const { itemId } = req.body; // Changed from productId to itemId
+        const itemId = req?.params?.id; // Changed from productId to itemId
         if (!itemId) {
             throw new Error('Item Id is required');
         }
