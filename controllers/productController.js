@@ -68,70 +68,11 @@ const createProduct = asyncHandler(async (req, res) => {
 // @access = Public
 
 const getAllProducts = asyncHandler(async (req, res) => {
-
-    let productQuery = Product.find();
-
-    // search by name
-    if (req.query.name) {
-        productQuery = productQuery.find({ name: { $regex: req.query.name, $options: 'i' } });
-    }
-    // search by brand
-    if (req.query.brand) {
-        productQuery = productQuery.find({ brand: { $regex: req.query.brand, $options: 'i' } });
-    }
-    // search by category
-    if (req.query.category) {
-        productQuery = productQuery.find({ category: { $regex: req.query.category, $options: 'i' } });
-    }
-    // search by colors
-    if (req.query.colors) {
-        productQuery = productQuery.find({ colors: { $regex: req.query.colors, $options: 'i' } });
-    }
-    // search by sizes
-    if (req.query.sizes) {
-        productQuery = productQuery.find({ sizes: { $regex: req.query.sizes, $options: 'i' } });
-    }
-    // Filters by price Range
-    if (req.query.price) {
-        const priceRange = req.query.price.split('-');
-
-        productQuery = productQuery.find({ price: { $gte: priceRange[0], $lte: priceRange[1] } });
-    }
-
-    // Pagination
-    const page = parseInt(req.query.page) ? parseInt(req.query.page) : 1;
-    const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : 10;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const total = await Product.countDocuments();
-
-    productQuery = productQuery.skip(startIndex).limit(limit);
-
-    // pagination results
-    const pagination = {};
-    if (endIndex < total) {
-        pagination.next = {
-            page: page + 1,
-            limit
-        }
-    }
-
-    if (startIndex > 0) {
-        pagination.prev = {
-            page: page - 1,
-            limit
-        }
-    }
-
-    // setting data 
-    const products = await productQuery.populate('reviews');
-
+    const products = await Product.find();
     res.status(200).json({
         status: 'success',
-        total,
-        pagination,
-        message: 'Products Fetched successfully',
-        result: products.length,
+        message: 'All Products Fetched',
+        total: products.length,
         products
     })
 })
