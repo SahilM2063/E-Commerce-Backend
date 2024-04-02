@@ -212,6 +212,48 @@ const userProfile = asyncHandler(
     }
 )
 
+// @desc = Update User Profile
+// @route = PUT /api/v1/users/:id
+// @access = Private
+
+const updateUserProfile = asyncHandler(
+    async (req, res) => {
+        const userId = req.params.id;
+        console.log(userId)
+        if (!userId) {
+            throw new Error('User not found');
+        }
+
+        const foundUser = await User.findById(userId);
+        if (!foundUser) {
+            throw new Error('User not found');
+        }
+
+
+        let pfp;
+        if (req.file) {
+            pfp = req.file.path
+        } else {
+            pfp = foundUser.pfp
+        }
+
+        console.log(pfp)
+
+        const { firstName, lastName, email, gender } = req.body;
+
+        const user = await User.findByIdAndUpdate(userId,
+            { firstName, lastName, email, gender, pfp },
+            { new: true });
+
+        res.status(200).json({
+            status: "success",
+            message: "User profile updated",
+            user
+        })
+    }
+)
+
+
 // @desc = Update shipping address
 // @route = PUR /api/v1/users/update-shipping
 // @access = Private
@@ -251,4 +293,4 @@ const deleteUser = asyncHandler(
     })
 
 
-module.exports = { registerUser, loginUser, getAllUsers, updateUserPassword, userProfile, updateShippingAddress, resetPasswordLink, resetPassword, deleteUser }
+module.exports = { registerUser, loginUser, getAllUsers, updateUserPassword, userProfile, updateShippingAddress, resetPasswordLink, resetPassword, deleteUser, updateUserProfile }

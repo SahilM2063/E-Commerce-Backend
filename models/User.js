@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    pfp: {
+        type: String,
+        default: ''
+    },
+    gender: {
+        type: String,
+        enum: ['male', 'female', 'other']
+    },
     cart: [
         {
             productId: {
