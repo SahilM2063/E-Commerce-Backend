@@ -219,7 +219,6 @@ const userProfile = asyncHandler(
 const updateUserProfile = asyncHandler(
     async (req, res) => {
         const userId = req.params.id;
-        console.log(userId)
         if (!userId) {
             throw new Error('User not found');
         }
@@ -236,8 +235,6 @@ const updateUserProfile = asyncHandler(
         } else {
             pfp = foundUser.pfp
         }
-
-        console.log(pfp)
 
         const { firstName, lastName, email, gender } = req.body;
 
