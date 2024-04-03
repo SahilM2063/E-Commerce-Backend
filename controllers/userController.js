@@ -256,11 +256,20 @@ const updateUserProfile = asyncHandler(
 // @access = Private
 
 const updateShippingAddress = asyncHandler(async (req, res) => {
-    const { firstName, lastName, address, city, postalCode, province, country, phoneNumber } = req.body
+    const userId = req.params.id;
+    if (!userId) {
+        throw new Error('User not found');
+    }
 
-    const user = await User.findByIdAndUpdate(req.userAuthId, {
+    const foundUser = await User.findById(userId);
+    if (!foundUser) {
+        throw new Error('User not found');
+    }
+    const { firstName, lastName, address, city, postalCode, state, country, phoneNumber } = req.body
+
+    const user = await User.findByIdAndUpdate(userId, {
         shippingAddress: {
-            firstName, lastName, address, city, postalCode, province, country, phoneNumber
+            firstName, lastName, address, city, postalCode, state, country, phoneNumber
         },
         hasShippingAddress: true
     }, { new: true });

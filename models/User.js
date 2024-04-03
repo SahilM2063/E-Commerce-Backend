@@ -88,7 +88,7 @@ const userSchema = new mongoose.Schema({
         postalCode: {
             type: String,
         },
-        province: {
+        state: {
             type: String,
         },
         country: {
