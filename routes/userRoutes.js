@@ -18,6 +18,6 @@ userRoutes.post('/reset-password/:id/:token', resetPassword);
 userRoutes.get('/profile', isLoggedIn, userProfile);
 userRoutes.put('/:id', isLoggedIn, uploadUserProfile.single('pfp'), updateUserProfile);
 userRoutes.put('/update-shipping/:id', isLoggedIn, updateShippingAddress);
-userRoutes.delete('/:id', isLoggedIn, isAdmin, deleteUser);
+userRoutes.delete('/:id', isLoggedIn, deleteUser);
 
 module.exports = userRoutes;

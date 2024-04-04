@@ -55,7 +55,8 @@ const getAllCoupons = asyncHandler(async (req, res) => {
 // @access = Private/Admin
 
 const getSingleCoupon = asyncHandler(async (req, res) => {
-    const coupon = await Coupon.findById(req.params.id);
+    const { code } = req.body;
+    const coupon = await Coupon.findOne({ code: code });
     if (!coupon) {
         throw new Error('Coupon not found');
     } else {
