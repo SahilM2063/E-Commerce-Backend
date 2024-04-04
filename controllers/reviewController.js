@@ -4,7 +4,7 @@ const asyncHandler = require('express-async-handler');
 
 const createReview = asyncHandler(async (req, res) => {
     const { product_id } = req.params
-    const { product, rating, comment } = req.body
+    const { rating, comment } = req.body
 
     const productFound = await Product.findById(product_id).populate('reviews');
     // check if product exists

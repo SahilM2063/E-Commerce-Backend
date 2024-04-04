@@ -83,7 +83,13 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
 const getSingleProduct = asyncHandler(async (req, res) => {
     // fetch product from id
-    const product = await Product.findById(req.params.id).populate('reviews');
+    const product = await Product.findById(req.params.id).populate({
+        path: 'reviews',
+        populate: {
+            path: 'user',
+            model: 'User' // Make sure this matches the name of your User model
+        }
+    });
 
     // check if product exists
     if (!product) {
