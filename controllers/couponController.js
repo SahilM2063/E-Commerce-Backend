@@ -74,12 +74,32 @@ const getSingleCoupon = asyncHandler(async (req, res) => {
 const updateCoupon = asyncHandler(async (req, res) => {
     const { code, startDate, endDate, discount } = req.body;
 
-    const coupon = await Coupon.findByIdAndUpdate(req.params.id, {
-        code: code?.toUpperCase(),
-        startDate,
-        endDate,
-        discount
-    }, { new: true });
+    // Fetch the coupon document
+    const coupon = await Coupon.findById(req.params.id);
+    if (!coupon) {
+        throw new Error('Coupon not found');
+    }
+
+    // Manually validate the data
+    if (endDate <= startDate) {
+        throw new Error("End Date must be greater than Start Date");
+    }
+    if (startDate < Date.now()) {
+        throw new Error("Start Date must be greater than today");
+    }
+    if (endDate < Date.now()) {
+        throw new Error("End Date must be greater than today");
+    }
+    if (discount <= 0 || discount >= 100) {
+        throw new Error("Discount must be in right proportion");
+    }
+
+    // Update the document if all validations pass
+    coupon.code = code?.toUpperCase();
+    coupon.startDate = startDate;
+    coupon.endDate = endDate;
+    coupon.discount = discount;
+    await coupon.save();
 
     res.status(200).json({
         status: "success",
@@ -87,6 +107,7 @@ const updateCoupon = asyncHandler(async (req, res) => {
         coupon
     })
 })
+
 
 
 // @desc = Delete coupon
