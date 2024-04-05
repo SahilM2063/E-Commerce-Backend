@@ -61,6 +61,7 @@ const getSingleCoupon = asyncHandler(async (req, res) => {
         throw new Error('Coupon not found');
     } else {
         res.status(200).json({
+            message: "Coupon Found successfully",
             status: "success",
             coupon
         })
