@@ -11,20 +11,20 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createOrder = asyncHandler(async (req, res) => {
     // get the coupon
-    const { coupon } = req?.query;
+    // const { coupon } = req?.query;
 
-    const couponFound = await Coupon.findOne({ code: coupon?.toUpperCase() });
-    console.log(couponFound)
-    // check if coupon exists or not
-    if (!couponFound) {
-        throw new Error('Coupon not found');
-    }
-    // check if coupon is expired or not 
-    if (couponFound?.isExpired) {
-        throw new Error('Coupon expired');
-    }
-    // get the discount
-    const discount = couponFound?.discount / 100;
+    // const couponFound = await Coupon.findOne({ code: coupon?.toUpperCase() });
+    // console.log(couponFound)
+    // // check if coupon exists or not
+    // if (!couponFound) {
+    //     throw new Error('Coupon not found');
+    // }
+    // // check if coupon is expired or not 
+    // if (couponFound?.isExpired) {
+    //     throw new Error('Coupon expired');
+    // }
+    // // get the discount
+    // const discount = couponFound?.discount / 100;
 
     const { orderItems, shippingAddress, totalPrice } = req.body;
 
@@ -46,47 +46,58 @@ const createOrder = asyncHandler(async (req, res) => {
         user: userFound?._id,
         orderItems,
         shippingAddress,
-        totalPrice: couponFound ? totalPrice - totalPrice * discount : totalPrice,
+        totalPrice
     })
-    console.log(order)
+    // console.log(order)
 
     // save the order in User model
     userFound.orders.push(order?._id);
     await userFound.save();
 
-    const products = await Product.find({ _id: { $in: orderItems } })
+    const productIds = orderItems.map(item => item.productId._id);
+    const products = await Product.find({ _id: { $in: productIds } })
 
-    orderItems?.map(async (order) => {
-        const product = products?.find((product) => {
-            return product?._id.toString() === order?._id.toString();
-        });
+
+    orderItems.forEach(async (orderItem) => {
+        const product = products.find(product => product._id.toString() === orderItem.productId._id.toString());
         if (product) {
-            product.totalSold += order.qty;
+            product.totalSold += orderItem.quantity;
+            await product.save();
         }
-        await product.save()
     });
 
+    // orderItems?.map(async (order) => {
+    //     const product = products?.find((product) => {
+    //         return product?._id.toString() === order?._id.toString();
+    //     });
+    //     if (product) {
+    //         product.totalSold += order.quantity;
+    //     }
+    //     // await product.save()
+    // });
+
     // convert the orderItems to have same structure as stripe needed
-    const convertedOrders = orderItems?.map((item) => {
+    const convertedOrders = orderItems.map(item => {
         return {
             price_data: {
                 currency: 'inr',
                 product_data: {
-                    name: item?.name,
-                    description: item?.description
+                    name: item.productId.name,
+                    description: item.productId.description
                 },
-                unit_amount: item?.price * 100,
+                unit_amount: item.price * 100,
             },
-            quantity: item?.qty,
-        }
-    })
+            quantity: item.quantity,
+        };
+    });
+
     // Make stripe payment
     const session = await stripe.checkout.sessions.create({
         line_items: convertedOrders,
         metadata: {
             orderId: JSON.stringify(order?._id),
         },
-        payment_method_types: ['card',],
+        payment_method_types: ['card'],
         mode: 'payment',
         success_url: `http://localhost:3000/success`,
         cancel_url: `http://localhost:3000/cancel`
