@@ -10,23 +10,7 @@ const dotenv = require('dotenv').config();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createOrder = asyncHandler(async (req, res) => {
-    // get the coupon
-    // const { coupon } = req?.query;
-
-    // const couponFound = await Coupon.findOne({ code: coupon?.toUpperCase() });
-    // console.log(couponFound)
-    // // check if coupon exists or not
-    // if (!couponFound) {
-    //     throw new Error('Coupon not found');
-    // }
-    // // check if coupon is expired or not 
-    // if (couponFound?.isExpired) {
-    //     throw new Error('Coupon expired');
-    // }
-    // // get the discount
-    // const discount = couponFound?.discount / 100;
-
-    const { orderItems, shippingAddress, totalPrice } = req.body;
+    const { orderItems, shippingAddress, totalValue } = req.body;
 
     // find the user
     const userFound = await User.findById(req.userAuthId);
@@ -46,7 +30,7 @@ const createOrder = asyncHandler(async (req, res) => {
         user: userFound?._id,
         orderItems,
         shippingAddress,
-        totalPrice
+        totalValue
     })
     // console.log(order)
 
@@ -66,34 +50,36 @@ const createOrder = asyncHandler(async (req, res) => {
         }
     });
 
-    // orderItems?.map(async (order) => {
-    //     const product = products?.find((product) => {
-    //         return product?._id.toString() === order?._id.toString();
-    //     });
-    //     if (product) {
-    //         product.totalSold += order.quantity;
-    //     }
-    //     // await product.save()
+    // // convert the orderItems to have same structure as stripe needed
+    // const convertedOrders = orderItems.map(item => {
+    //     return {
+    //         price_data: {
+    //             currency: 'inr',
+    //             product_data: {
+    //                 name: item.productId.name,
+    //                 description: item.productId.description
+    //             },
+    //             unit_amount: item.price * 100,
+    //         },
+    //         quantity: item.quantity,
+    //     };
     // });
-
-    // convert the orderItems to have same structure as stripe needed
-    const convertedOrders = orderItems.map(item => {
-        return {
-            price_data: {
-                currency: 'inr',
-                product_data: {
-                    name: item.productId.name,
-                    description: item.productId.description
-                },
-                unit_amount: item.price * 100,
-            },
-            quantity: item.quantity,
-        };
-    });
 
     // Make stripe payment
     const session = await stripe.checkout.sessions.create({
-        line_items: convertedOrders,
+        line_items: [
+            {
+                price_data: {
+                    currency: 'inr',
+                    product_data: {
+                        name: 'Order Total',
+                        description: 'Total payment for the order'
+                    },
+                    unit_amount: totalValue * 100, 
+                },
+                quantity: 1, 
+            },
+        ],
         metadata: {
             orderId: JSON.stringify(order?._id),
         },
