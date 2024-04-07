@@ -75,9 +75,9 @@ const createOrder = asyncHandler(async (req, res) => {
                         name: 'Order Total',
                         description: 'Total payment for the order'
                     },
-                    unit_amount: totalValue * 100, 
+                    unit_amount: totalValue * 100,
                 },
-                quantity: 1, 
+                quantity: 1,
             },
         ],
         metadata: {
@@ -85,8 +85,8 @@ const createOrder = asyncHandler(async (req, res) => {
         },
         payment_method_types: ['card'],
         mode: 'payment',
-        success_url: `http://localhost:3000/success`,
-        cancel_url: `http://localhost:3000/cancel`
+        success_url: `http://localhost:5173/user/payment/success`,
+        cancel_url: `http://localhost:5173/user/payment/failed`
     })
 
     res.send({ url: session.url })
