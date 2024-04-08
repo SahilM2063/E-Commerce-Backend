@@ -30,7 +30,7 @@ const createOrder = asyncHandler(async (req, res) => {
         user: userFound?._id,
         orderItems,
         shippingAddress,
-        totalValue
+        totalPrice: totalValue
     })
     // console.log(order)
 
@@ -97,7 +97,10 @@ const createOrder = asyncHandler(async (req, res) => {
 // @access : Private/Admin
 
 const getAllOrders = asyncHandler(async (req, res) => {
-    const orders = await Order.find()
+    const orders = await Order.find().populate({
+        path: 'user',
+        model: 'User'
+    });
     res.status(200).json({
         status: "success",
         message: "All Orders Fetched",

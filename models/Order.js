@@ -35,7 +35,7 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        default: 'Not Specified'
+        default: 'CARD'
     },
     totalPrice: {
         type: Number,
@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema({
     },
     currency: {
         type: String,
-        default: 'Not Specified'
+        default: 'INR'
     },
 
     // for admin

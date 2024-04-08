@@ -61,7 +61,7 @@ const productSchema = new mongoose.Schema({
 // virtual populate for totalQty
 productSchema.virtual('qtyLeft').get(function () {
     const product = this
-    return product.totalQty - product.totalSold
+    return Math.max(0, product.totalQty - product.totalSold);
 })
 
 // virtual populate for totalReviews
