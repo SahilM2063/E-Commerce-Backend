@@ -158,7 +158,10 @@ const getOrderStats = asyncHandler(async (req, res) => {
                 },
                 averageOrder: {
                     $avg: '$totalPrice'
-                }
+                },
+                totalOrders: {
+                    $sum: 1
+                },
             }
         }
     ]);
@@ -183,8 +186,6 @@ const getOrderStats = asyncHandler(async (req, res) => {
             }
         }
     ])
-
-
 
     res.status(200).json({
         status: "success",
