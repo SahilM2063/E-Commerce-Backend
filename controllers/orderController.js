@@ -187,12 +187,45 @@ const getOrderStats = asyncHandler(async (req, res) => {
         }
     ])
 
+    // Aggregation for total quantity by productId and category
+    const quantityByProductAndCategory = await Order.aggregate([
+        {
+            $unwind: "$orderItems"
+        },
+        {
+            $group: {
+                _id: {
+                    productId: "$orderItems.productId.id",
+                    category: "$orderItems.productId.category"
+                },
+                totalQuantity: {
+                    $sum: "$orderItems.quantity"
+                }
+            }
+        }
+    ]);
+
+    const totalProductsSold = await Order.aggregate([
+        {
+            $unwind: "$orderItems"
+        },
+        {
+            $group: {
+                _id: null,
+                totalQuantity: {
+                    $sum: "$orderItems.quantity"
+                }
+            }
+        }
+    ])
+
     res.status(200).json({
         status: "success",
         message: "Order Stats Successfully",
-        orderStats, todaySales
+        orderStats, todaySales, quantityByProductAndCategory, totalProductsSold
     })
 })
+
 
 module.exports = { createOrder, getAllOrders, getSingleOrder, updateOrder, getOrderStats }
 
