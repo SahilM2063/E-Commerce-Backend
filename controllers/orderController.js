@@ -195,7 +195,7 @@ const getOrderStats = asyncHandler(async (req, res) => {
         {
             $group: {
                 _id: {
-                    productId: "$orderItems.productId.id",
+                    // productId: "$orderItems.productId.id",
                     category: "$orderItems.productId.category"
                 },
                 totalQuantity: {
