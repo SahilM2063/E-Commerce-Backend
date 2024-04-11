@@ -205,6 +205,27 @@ const getOrderStats = asyncHandler(async (req, res) => {
         }
     ]);
 
+    const productsSoldByDate = await Order.aggregate([
+        {
+            $unwind: "$orderItems"
+        },
+        {
+            $group: {
+                _id: {
+                    date: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$createdAt"
+                        }
+                    }
+                },
+                totalProductsSold: {
+                    $sum: "$orderItems.quantity"
+                }
+            }
+        }
+    ])
+
     const totalProductsSold = await Order.aggregate([
         {
             $unwind: "$orderItems"
@@ -222,7 +243,7 @@ const getOrderStats = asyncHandler(async (req, res) => {
     res.status(200).json({
         status: "success",
         message: "Order Stats Successfully",
-        orderStats, todaySales, quantityByProductAndCategory, totalProductsSold
+        orderStats, todaySales, quantityByProductAndCategory, totalProductsSold, productsSoldByDate
     })
 })
 
