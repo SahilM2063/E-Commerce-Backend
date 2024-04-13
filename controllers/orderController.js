@@ -251,10 +251,25 @@ const getOrderStats = asyncHandler(async (req, res) => {
         }
     ])
 
+    const topFiveProducts = await Order.aggregate([
+        { $unwind: "$orderItems" },
+        {
+            $group: {
+                _id: "$orderItems.productId._id",
+                product: { $first: "$orderItems.productId" },
+                totalSold: {
+                    $sum: "$orderItems.productId.totalSold",
+                },
+            },
+        },
+        { $sort: { totalSold: -1 } },
+        { $limit: 5 },
+    ])
+
     res.status(200).json({
         status: "success",
         message: "Order Stats Successfully",
-        orderStats, todaySales, quantityByProductAndCategory, totalProductsSold, productsSoldByDate, ordersByCountry
+        orderStats, todaySales, quantityByProductAndCategory, totalProductsSold, productsSoldByDate, ordersByCountry, topFiveProducts
     })
 })
 
