@@ -238,12 +238,23 @@ const getOrderStats = asyncHandler(async (req, res) => {
                 }
             }
         }
+    ]);
+
+    const ordersByCountry = await Order.aggregate([
+        {
+            $group: {
+                _id: "$shippingAddress.country",
+                totalOrders: {
+                    $sum: 1
+                }
+            }
+        }
     ])
 
     res.status(200).json({
         status: "success",
         message: "Order Stats Successfully",
-        orderStats, todaySales, quantityByProductAndCategory, totalProductsSold, productsSoldByDate
+        orderStats, todaySales, quantityByProductAndCategory, totalProductsSold, productsSoldByDate, ordersByCountry
     })
 })
 
