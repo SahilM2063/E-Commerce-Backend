@@ -78,7 +78,7 @@ productSchema.virtual("averageRating").get(function () {
         totalRating += review?.rating;
     })
 
-    return Number(totalRating / product?.reviews?.length).toFixed(1);
+    return Number(totalRating / product?.totalReviews).toFixed(1);
 })
 
 
