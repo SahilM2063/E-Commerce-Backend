@@ -72,14 +72,21 @@ productSchema.virtual("totalReviews").get(function () {
 
 // virtual populate for averageRating
 productSchema.virtual("averageRating").get(function () {
-    let totalRating = 0;
     const product = this;
-    product?.reviews?.forEach((review) => {
-        totalRating += review?.rating;
-    })
+    const totalReviews = product.reviews.length;
 
-    return Number(totalRating / product?.totalReviews).toFixed(1);
-})
+    if (totalReviews === 0) {
+        return 0;
+    }
 
+    let totalRating = 0;
+    product.reviews.forEach((review) => {
+        if (typeof review.rating === 'number') {
+            totalRating += review.rating;
+        }
+    });
+
+    return parseFloat((totalRating / totalReviews).toFixed(1));
+});
 
 module.exports = mongoose.model('Product', productSchema);

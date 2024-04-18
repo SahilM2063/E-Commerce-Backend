@@ -68,7 +68,13 @@ const createProduct = asyncHandler(async (req, res) => {
 // @access = Public
 
 const getAllProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find();
+    const products = await Product.find().populate({
+        path: 'reviews',
+        populate: {
+            path: 'user',
+            model: 'User' // Make sure this matches the name of your User model
+        }
+    });
     res.status(200).json({
         status: 'success',
         message: 'All Products Fetched',
