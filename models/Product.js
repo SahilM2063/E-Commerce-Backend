@@ -70,7 +70,7 @@ productSchema.virtual("totalReviews").get(function () {
     return product?.reviews?.length;
 })
 
-// virtual populate for averageRating
+// virtual populate for averageRating for each product
 productSchema.virtual("averageRating").get(function () {
     const product = this;
     const totalReviews = product.reviews.length;
