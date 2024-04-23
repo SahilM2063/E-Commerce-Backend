@@ -86,6 +86,7 @@ productSchema.virtual("averageRating").get(function () {
         }
     });
 
+    // later changes
     return parseFloat((totalRating / totalReviews).toFixed(1));
 });
 
