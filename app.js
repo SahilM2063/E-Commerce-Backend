@@ -70,6 +70,9 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
 
 app.use(express.json());
 // routes
+app.get('/', (req, res) => {
+    res.send('Api Is Working')
+})
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
